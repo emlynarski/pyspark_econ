@@ -1,0 +1,12 @@
+Data1 = read (“PHC4”)
+Data1.filter(OpCode=Surgery and Year <= 2005 and Year >= 1994)
+Data1.exclude(PatientID=NA)
+Data1.exclude(??)
+ 
+Data2 = read (“AHA Survey”)
+Data2.filter(AHA=NA)
+Data2.filter(Zip=NA)
+ 
+Data3 = join (Data1.HospitalID = Data2.HospitalID)
+Data3.filter …
+

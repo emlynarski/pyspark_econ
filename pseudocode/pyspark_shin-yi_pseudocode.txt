@@ -1,0 +1,27 @@
+
+## Step 0: setup (imports, variables, etc...)
+aha_file_path = "/path/to/aha.txt" 			# include file extension
+phc4_file_path = "/path/to/phc4.tsv"		# include file extension
+
+
+## Step 1: load files
+aha_orig_df = spark.read.csv(aha_file_path, sep='\t', header=True)
+phc4_orig_df = spark.read.csv(phc4_file_path, sep='\t', header=True)
+
+
+## Step 2: preprocess DataFrames
+aha_filt_df = aha_orig_df.na.drop(["AHA", "Zip"])
+
+phc4_filt_df = phc4_orig_df.filter(col("OpCode") == "Surgery")
+phc4_filt_df = phc4_filt_df.filter(col("Year").between(1994, 2005))
+phc4_filt_df = phc4_filt_df.na.drop(["PatientID"])
+
+
+## Step 3: join DataFrames
+join_df = aha_filt_df.join(phc4_filt_df, on=['HospitalID'], how="inner")
+
+
+## Step 4: process joined DataFrame
+join_filt_df = join_df.filter((col("TotalCharge") < 1000000) & (col("Cost") < 500000))
+join_filt_df = join_filt_df.na.drop(["Cost-to-charge"])
+join_filt_df = join_filt_df.filter(...)
